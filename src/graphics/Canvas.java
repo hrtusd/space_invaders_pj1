@@ -1,6 +1,5 @@
 package graphics;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +11,10 @@ public class Canvas extends JPanel {
 
   private final List<IPaintable> objects = new ArrayList<IPaintable>();
 
+  private static final Canvas canvas = new Canvas();
+
   public Canvas() {
-    this.setBackground(Color.RED);
-    this.setSize(400, 300);
-    this.setVisible(true);
+
   }
 
   @Override
@@ -31,5 +30,9 @@ public class Canvas extends JPanel {
 
   public void remove(IPaintable obj) {
     this.objects.remove(obj);
+  }
+
+  public static Canvas getCanvas() {
+    return canvas;
   }
 }
