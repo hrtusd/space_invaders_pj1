@@ -2,6 +2,7 @@ package graphics;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.geom.Rectangle2D;
 
 public class Rectangle implements IPaintable, IMovable {
   private int posX;
@@ -17,6 +18,16 @@ public class Rectangle implements IPaintable, IMovable {
     this.width = width;
     this.height = height;
     this.color = color;
+  }
+
+  public java.awt.Rectangle getRect() {
+    return new java.awt.Rectangle(this.posX, this.posY, this.width, this.height);
+  }
+
+  public boolean collideWith(Rectangle c) {
+    Rectangle2D s = this.getRect();
+    Rectangle2D n = c.getRect();
+    return s.intersects(n);
   }
 
   @Override

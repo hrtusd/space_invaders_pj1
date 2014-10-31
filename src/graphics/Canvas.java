@@ -14,11 +14,10 @@ public class Canvas extends JPanel {
   private static final Canvas canvas = new Canvas();
 
   public Canvas() {
-
   }
 
   @Override
-  public void paint(Graphics g) {
+  public void paintComponent(Graphics g) {
     for (IPaintable obj : this.objects) {
       obj.paint(g);
     }
