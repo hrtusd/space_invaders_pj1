@@ -14,6 +14,7 @@ public class Canvas extends JPanel {
   private static final Canvas canvas = new Canvas();
 
   public Canvas() {
+    setSize(800, 600);
   }
 
   @Override

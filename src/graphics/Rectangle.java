@@ -10,6 +10,7 @@ public class Rectangle implements IPaintable, IMovable {
   private final int width;
   private final int height;
   private final Color color;
+  private int speed;
   private static Canvas canvas = Canvas.getCanvas();
 
   public Rectangle(int x, int y, int width, int height, Color color) {
@@ -18,6 +19,7 @@ public class Rectangle implements IPaintable, IMovable {
     this.width = width;
     this.height = height;
     this.color = color;
+    this.speed = 0;
   }
 
   public java.awt.Rectangle getRect() {
@@ -30,6 +32,14 @@ public class Rectangle implements IPaintable, IMovable {
     return s.intersects(n);
   }
 
+  public void move() {
+    this.posX += this.speed;
+  }
+
+  public void setSpeed(int s) {
+    this.speed = s;
+  }
+
   @Override
   public void paint(Graphics g) {
     g.setColor(this.color);
@@ -38,27 +48,23 @@ public class Rectangle implements IPaintable, IMovable {
 
   @Override
   public void moveRight(int step) {
-    // TODO Auto-generated method stub
     this.posX += step;
     canvas.repaint();
   }
 
   @Override
   public void moveLeft(int step) {
-    // TODO Auto-generated method stub
     moveRight(-step);
   }
 
   @Override
   public void moveDown(int step) {
-    // TODO Auto-generated method stub
     this.posY += step;
     canvas.repaint();
   }
 
   @Override
   public void moveUp(int step) {
-    // TODO Auto-generated method stub
     moveDown(-step);
   }
 }
