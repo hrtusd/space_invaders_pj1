@@ -28,15 +28,14 @@ public class Game extends JFrame implements KeyListener {
 
     this.add(this.canvas);
 
+    Rectangle bg = new Rectangle(0, 0, this.canvas.getWidth(), this.canvas.getHeight(), Color.BLACK);
+    this.canvas.add(bg);
+
     Run();
   }
 
   public void Run() {
     this.canvas.addKeyListener(this);
-    this.canvas.setFocusable(true);
-
-    Rectangle bg = new Rectangle(0, 0, this.canvas.getWidth(), this.canvas.getHeight(), Color.BLACK);
-    this.canvas.add(bg);
 
     this.player = new Player();
     this.canvas.add(this.player);
@@ -88,6 +87,11 @@ public class Game extends JFrame implements KeyListener {
               break;
             }
           }
+
+          if (this.player_shot != null && this.player_shot.getRect().getY() < -25 ) {
+            this.player.shotDestroyed();
+            this.player_shot = null;
+          }
         }
 
 
@@ -109,7 +113,10 @@ public class Game extends JFrame implements KeyListener {
       Game.this.player.setSpeed(2);
     }
     if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-      this.player_shot = Game.this.player.shoot();
+      if (this.player_shot == null) {
+        this.player_shot = Game.this.player.shoot();
+        this.canvas.add(this.player_shot);
+      }
     }
   }
 

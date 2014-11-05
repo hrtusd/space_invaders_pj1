@@ -15,6 +15,8 @@ public class Canvas extends JPanel {
 
   public Canvas() {
     setSize(800, 600);
+    setVisible(true);
+    setFocusable(true);
   }
 
   @Override

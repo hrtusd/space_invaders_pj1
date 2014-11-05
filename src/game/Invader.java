@@ -6,7 +6,6 @@ import graphics.IPaintable;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -24,21 +23,21 @@ public class Invader implements IPaintable, ICollidable {
     switch (type) {
       case 1:
         try {
-          this.image = ImageIO.read(new File("src/img/inv1a.png"));
+          this.image = ImageIO.read(ResourceLoader.load("inv1a.png"));
         } catch (IOException e) {
         }
         this.reward = 10;
         break;
       case 2:
         try {
-          this.image = ImageIO.read(new File("src/img/inv2a.png"));
+          this.image = ImageIO.read(ResourceLoader.load("inv2a.png"));
         } catch (IOException e) {
         }
         this.reward = 20;
         break;
       case 3:
         try {
-          this.image = ImageIO.read(new File("src/img/inv3a.png"));
+          this.image = ImageIO.read(ResourceLoader.load("inv3a.png"));
         } catch (IOException e) {
         }
         this.reward = 30;

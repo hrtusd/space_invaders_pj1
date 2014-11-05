@@ -5,7 +5,6 @@ import graphics.IPaintable;
 
 import java.awt.Graphics;
 import java.awt.Image;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -21,7 +20,8 @@ public class Player implements IPaintable {
 
   public Player() {
     try {
-      this.image = ImageIO.read(new File("src/img/player.png"));
+      //this.image = ImageIO.read(new File("src/img/player.png"));
+      this.image = ImageIO.read(ResourceLoader.load("player.png"));
     } catch (IOException e) {
     }
     this.image = this.image.getScaledInstance(50, -1, 0);
