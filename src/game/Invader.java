@@ -1,15 +1,17 @@
 package game;
 
+import graphics.ICollidable;
 import graphics.IPaintable;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class Invader implements IPaintable {
+public class Invader implements IPaintable, ICollidable {
   private Image image;
   private int reward;
   private final int step;
@@ -52,6 +54,18 @@ public class Invader implements IPaintable {
   @Override
   public void paint(Graphics g) {
     g.drawImage(this.image, this.posX, this.posY, null);
+  }
+
+  @Override
+  public Rectangle getRect() {
+    // TODO Auto-generated method stub
+    return new Rectangle(this.posX, this.posY, this.image.getWidth(null), this.image.getHeight(null));
+  }
+
+  @Override
+  public boolean collideWith(ICollidable c) {
+    // TODO Auto-generated method stub
+    return false;
   }
 
 }

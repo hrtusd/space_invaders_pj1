@@ -1,6 +1,7 @@
 package graphics;
 
 public interface IMovable {
+  public void move();
 
   public void moveRight(int step);
 

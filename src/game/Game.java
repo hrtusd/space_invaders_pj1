@@ -6,6 +6,8 @@ import graphics.Rectangle;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -13,6 +15,8 @@ import javax.swing.JFrame;
 public class Game extends JFrame implements KeyListener {
   private final Canvas canvas = Canvas.getCanvas();
   private Player player;
+  private Shot player_shot;
+  private final List<Invader> invaders = new ArrayList<Invader>();
 
   public Game() {
     this.setTitle("Space Invaders");
@@ -57,7 +61,9 @@ public class Game extends JFrame implements KeyListener {
           break;
       }
       for (int i = 0; i < 11; i++) {
-        this.canvas.add(new Invader(type, x, y, s));
+        Invader inv = new Invader(type, x, y, s);
+        this.invaders.add(inv);
+        this.canvas.add(inv);
         x += s;
       }
       y += s;
@@ -69,6 +75,22 @@ public class Game extends JFrame implements KeyListener {
     while (true) {
       try {
         this.player.move();
+        if (this.player_shot != null) {
+          this.player_shot.move();
+
+          for (Invader invader : this.invaders) {
+            if (this.player_shot.collideWith(invader)) {
+              this.invaders.remove(invader);
+              this.canvas.remove(invader);
+              this.canvas.remove(this.player_shot);
+              this.player_shot = null;
+              this.player.shotDestroyed();
+              break;
+            }
+          }
+        }
+
+
 
         Thread.sleep(10);
       } catch (InterruptedException e) {
@@ -87,7 +109,7 @@ public class Game extends JFrame implements KeyListener {
       Game.this.player.setSpeed(2);
     }
     if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-      Game.this.player.shoot();
+      this.player_shot = Game.this.player.shoot();
     }
   }
 

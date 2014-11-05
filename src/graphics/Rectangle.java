@@ -26,12 +26,13 @@ public class Rectangle implements IPaintable, IMovable {
     return new java.awt.Rectangle(this.posX, this.posY, this.width, this.height);
   }
 
-  public boolean collideWith(Rectangle c) {
+  public boolean collideWith(ICollidable c) {
     Rectangle2D s = this.getRect();
     Rectangle2D n = c.getRect();
     return s.intersects(n);
   }
 
+  @Override
   public void move() {
     this.posX += this.speed;
   }

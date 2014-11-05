@@ -2,9 +2,7 @@ package game;
 
 import graphics.Canvas;
 import graphics.IPaintable;
-import graphics.Rectangle;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.io.File;
@@ -19,7 +17,7 @@ public class Player implements IPaintable {
   private final int posY;
   private final int lives;
   private int shot_count;
-  private Rectangle shot;
+  private Shot shot;
 
   public Player() {
     try {
@@ -36,27 +34,17 @@ public class Player implements IPaintable {
   }
 
   // TODO Create Shot class and return new Shot, handle in Game
-  public void shoot() {
+  public Shot shoot() {
     if ( this.shot_count > 0 ) {
-      return;
+      return this.shot;
     }
-    this.shot = new Rectangle(this.posX + this.image.getWidth(null) / 2 - 5 / 2, this.posY - 25, 5, 25, Color.GREEN);
+    this.shot = new Shot(this.posX + this.image.getWidth(null) / 2 - 5 / 2, this.posY - 25);
     this.shot_count++;
-    Canvas.getCanvas().add(this.shot);
-    while (true) {
-      try {
-        if ( this.shot.getRect().getY() < 0 ) {
-          break;
-        }
-        this.shot.moveUp(5);
-        Canvas.getCanvas().repaint();
+    return this.shot;
+  }
 
-        Thread.sleep(100);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-
-    }
+  public void shotDestroyed() {
+    this.shot_count = 0;
   }
 
   public void move() {
