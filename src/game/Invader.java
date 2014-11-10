@@ -1,5 +1,6 @@
 package game;
 
+import graphics.Canvas;
 import graphics.ICollidable;
 import graphics.IPaintable;
 
@@ -12,6 +13,7 @@ import javax.imageio.ImageIO;
 
 public class Invader implements IPaintable, ICollidable {
   private Image image;
+  private Image image2;
   private int reward;
   private final int step;
   private final int posX;
@@ -24,6 +26,7 @@ public class Invader implements IPaintable, ICollidable {
       case 1:
         try {
           this.image = ImageIO.read(ResourceLoader.load("inv1a.png"));
+          this.image2 = ImageIO.read(ResourceLoader.load("inv1b.png"));
         } catch (IOException e) {
         }
         this.reward = 10;
@@ -31,6 +34,7 @@ public class Invader implements IPaintable, ICollidable {
       case 2:
         try {
           this.image = ImageIO.read(ResourceLoader.load("inv2a.png"));
+          this.image2 = ImageIO.read(ResourceLoader.load("inv2b.png"));
         } catch (IOException e) {
         }
         this.reward = 20;
@@ -38,6 +42,7 @@ public class Invader implements IPaintable, ICollidable {
       case 3:
         try {
           this.image = ImageIO.read(ResourceLoader.load("inv3a.png"));
+          this.image2 = ImageIO.read(ResourceLoader.load("inv3b.png"));
         } catch (IOException e) {
         }
         this.reward = 30;
@@ -45,6 +50,7 @@ public class Invader implements IPaintable, ICollidable {
     }
 
     this.image = this.image.getScaledInstance(-1, 30, 0);
+    this.image2 = this.image2.getScaledInstance(-1, 30, 0);
 
     this.posX = x + ( size - this.image.getWidth(null) ) / 2;
     this.posY = y + ( size - this.image.getHeight(null) ) / 2;
@@ -53,6 +59,13 @@ public class Invader implements IPaintable, ICollidable {
   @Override
   public void paint(Graphics g) {
     g.drawImage(this.image, this.posX, this.posY, null);
+  }
+
+  public void swap() {
+    Image tmp = this.image;
+    this.image = this.image2;
+    this.image2 = tmp;
+    Canvas.getCanvas().repaint();
   }
 
   @Override

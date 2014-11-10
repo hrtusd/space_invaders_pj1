@@ -79,8 +79,9 @@ public class Game extends JFrame implements KeyListener {
 
           for (Invader invader : this.invaders) {
             if (this.player_shot.collideWith(invader)) {
-              this.invaders.remove(invader);
               this.canvas.remove(invader);
+              this.invaders.remove(invader);
+
               this.canvas.remove(this.player_shot);
               this.player_shot = null;
               this.player.shotDestroyed();
@@ -116,6 +117,9 @@ public class Game extends JFrame implements KeyListener {
       if (this.player_shot == null) {
         this.player_shot = Game.this.player.shoot();
         this.canvas.add(this.player_shot);
+        for (Invader invader : this.invaders) {
+          invader.swap();
+        }
       }
     }
   }
