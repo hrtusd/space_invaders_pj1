@@ -48,8 +48,10 @@ public class Player implements IPaintable {
   }
 
   public void move() {
-    this.posX += this.speed;
-    Canvas.getCanvas().repaint();
+    if (this.speed != 0 && this.posX > 0 && this.posX < Canvas.getCanvas().getWidth() - this.image.getWidth(null) + 1) {
+      this.posX += this.speed;
+      Canvas.getCanvas().repaint();
+    }
   }
 
   public void setSpeed(int s) {

@@ -21,7 +21,7 @@ public class Shot implements IPaintable, IMovable, ICollidable {
     this.posY = y;
     this.width = 5;
     this.height = 25;
-    this.speed = 10;
+    this.speed = -10;
   }
 
   @Override
@@ -70,7 +70,7 @@ public class Shot implements IPaintable, IMovable, ICollidable {
   @Override
   public void move() {
     // TODO Auto-generated method stub
-    this.posY -= this.speed;
+    this.posY += this.speed;
     Canvas.getCanvas().repaint();
   }
 }

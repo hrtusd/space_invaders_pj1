@@ -6,7 +6,7 @@ import graphics.Rectangle;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -16,7 +16,7 @@ public class Game extends JFrame implements KeyListener {
   private final Canvas canvas = Canvas.getCanvas();
   private Player player;
   private Shot player_shot;
-  private final List<Invader> invaders = new ArrayList<Invader>();
+  private final List<Invader> invaders = new LinkedList<Invader>();
 
   public Game() {
     this.setTitle("Space Invaders");
@@ -97,7 +97,7 @@ public class Game extends JFrame implements KeyListener {
 
 
 
-        Thread.sleep(10);
+        Thread.sleep(5);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
