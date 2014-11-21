@@ -1,56 +1,89 @@
 package game;
 
 import graphics.Canvas;
+import graphics.ICollidable;
 import graphics.IPaintable;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class Player implements IPaintable {
+public class Player implements IPaintable, ICollidable {
   private Image image;
+  private Image image_d;
   private int speed;
   private int posX;
-  private final int posY;
-  private final int lives;
-  private int shot_count;
+  private int posY;
+  private int lives;
   private Shot shot;
+  private boolean can_shoot;
 
   public Player() {
     try {
-      //this.image = ImageIO.read(new File("src/img/player.png"));
       this.image = ImageIO.read(ResourceLoader.load("player.png"));
+      this.image_d = ImageIO.read(ResourceLoader.load("destroyed.png"));
     } catch (IOException e) {
     }
     this.image = this.image.getScaledInstance(50, -1, 0);
+    this.image_d = this.image_d.getScaledInstance(50, -1, 0);
     this.speed = 0;
     this.posX = Canvas.getCanvas().getWidth() / 2 - this.image.getWidth(null) / 2;
     this.posY = Canvas.getCanvas().getHeight() - this.image.getHeight(null);
 
     this.lives = 3;
-    this.shot_count = 0;
+    this.can_shoot = true;
   }
 
-  // TODO Create Shot class and return new Shot, handle in Game
-  public Shot shoot() {
-    if ( this.shot_count > 0 ) {
-      return this.shot;
-    }
-    this.shot = new Shot(this.posX + this.image.getWidth(null) / 2 - 5 / 2, this.posY - 25);
-    this.shot_count++;
+  public boolean canShoot() {
+    return this.can_shoot;
+  }
+
+  public void shoot() {
+    this.shot = new Shot(0, this.posX + this.image.getWidth(null) / 2 - 5 / 2, this.posY - 15);
+    Canvas.getCanvas().add(this.shot);
+    this.can_shoot = false;
+  }
+
+  public Shot shot() {
     return this.shot;
   }
 
   public void shotDestroyed() {
-    this.shot_count = 0;
+    Canvas.getCanvas().remove(this.shot);
+    this.can_shoot = true;
   }
 
   public void move() {
-    if (this.speed != 0 && this.posX > 0 && this.posX < Canvas.getCanvas().getWidth() - this.image.getWidth(null) + 1) {
-      this.posX += this.speed;
-      Canvas.getCanvas().repaint();
+    this.posX += this.speed;
+
+    if (this.posX < 0) {
+      this.posX = 0;
+    }
+
+    if (this.posX > Canvas.getCanvas().getWidth() - this.image.getWidth(null)) {
+      this.posX = Canvas.getCanvas().getWidth() - this.image.getWidth(null);
+    }
+  }
+
+  public void isHit() {
+    this.lives--;
+  }
+
+  public void destroy() {
+    this.image = this.image_d;
+    this.posY = Canvas.getCanvas().getHeight() - this.image.getHeight(null);
+    Canvas.getCanvas().repaint();
+  }
+
+  public boolean isDestroyed() {
+    if (this.lives == 0) {
+      return true;
+    }
+    else {
+      return false;
     }
   }
 
@@ -61,5 +94,16 @@ public class Player implements IPaintable {
   @Override
   public void paint(Graphics g) {
     g.drawImage(this.image, this.posX, this.posY, null);
+  }
+
+  @Override
+  public Rectangle getRect() {
+    return new Rectangle(this.posX, this.posY, this.image.getWidth(null), this.image.getHeight(null));
+  }
+
+  @Override
+  public boolean collideWith(ICollidable c) {
+    // TODO Auto-generated method stub
+    return false;
   }
 }
