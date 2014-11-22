@@ -1,7 +1,9 @@
 package game;
 
 import graphics.Canvas;
+import graphics.Rectangle;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -22,11 +24,14 @@ public class Game extends JFrame implements KeyListener, ActionListener {
   private final Map<Integer, Invader> invaders = new HashMap<>();
   private final List<Shot> invader_shots = new LinkedList<>();
   private final List<Base> bases = new LinkedList<>();
+  private final List<Entity> lives = new LinkedList<>();
   private Timer timer;
   private static Stage stage = Stage.START;
+  private static int score = 0;
   private int time;
   private int movetime;
   private Invader remove = null;
+  private int pdt;
   private int dt;
   private int di;
   private boolean down = false;
@@ -35,7 +40,7 @@ public class Game extends JFrame implements KeyListener, ActionListener {
 
   public Game() {
     this.setTitle("Space Invaders");
-    this.setSize(800, 800);
+    this.setSize(700, 700);
     this.setLocationRelativeTo(null);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setResizable(false);
@@ -54,9 +59,17 @@ public class Game extends JFrame implements KeyListener, ActionListener {
     this.time = 0;
     this.movetime = 50;
 
-    int x = 20;
-    int y = 50;
-    int s = 60;
+    int x = 100;
+    int y = 500;
+    for (int i = 0; i < 3; i++) {
+      Base b = new Base(x + 210 * i, y);
+      this.bases.add(b);
+      this.canvas.add(b);
+    }
+
+    x = 20;
+    y = 50;
+    int s = 50;
     int type = 0;
 
     for (int row = 0; row < 5; row++) {
@@ -89,32 +102,40 @@ public class Game extends JFrame implements KeyListener, ActionListener {
       }
     }
 
-    x = 100;
-    y = 620;
-    for (int i = 0; i < 3; i++) {
-      Base b = new Base(x + 250 * i, y);
-      this.bases.add(b);
-      this.canvas.add(b);
+    Rectangle line = new Rectangle(0, this.canvas.getHeight() - 40, this.canvas.getWidth(), 5, Color.GREEN);
+    this.canvas.add(line);
+
+    x = 130;
+    y = this.canvas.getHeight() - 30;
+    for (int i = 0; i < 2; i++) {
+      Entity l = new Entity("player.png", 40, -1, x + 50 * i, y);
+      this.lives.add(l);
+      this.canvas.add(l);
     }
 
     this.canvas.repaint();
     this.timer.start();
   }
 
-  public void Start() {
-
+  public void Reset() {
+    this.lives.clear();
+    this.bases.clear();
+    this.invaders.clear();
+    this.invader_shots.clear();
+    this.player = null;
+    this.time = 0;
+    score = 0;
+    this.canvas.clear();
   }
 
   public void Run() {
     switch (Game.stage) {
       case START:
-
         break;
       case GAME:
         Init();
         break;
       case END:
-
         break;
       case WIN:
         break;
@@ -125,6 +146,10 @@ public class Game extends JFrame implements KeyListener, ActionListener {
     return stage;
   }
 
+  public static int getScore() {
+    return score;
+  }
+
   public void moveInvaders() {
     if (this.moved == 1) {
       this.moved = 0;
@@ -133,6 +158,22 @@ public class Game extends JFrame implements KeyListener, ActionListener {
         if (!i.canMove()) {
           this.down = true;
           return;
+        }
+      }
+
+      // Invasion! (collision with base or player)
+      for (Entry<Integer, Invader> invader : this.invaders.entrySet()) {
+        for (Base base : this.bases) {
+          if (invader.getValue().collideWith(base)) {
+            this.timer.stop();
+            stage = Stage.END;
+            Run();
+          }
+        }
+        if (invader.getValue().collideWith(this.player)) {
+          this.timer.stop();
+          stage = Stage.END;
+          Run();
         }
       }
     }
@@ -208,9 +249,14 @@ public class Game extends JFrame implements KeyListener, ActionListener {
         Run();
       }
     }
-    if (Game.stage == Stage.END) {
+    if (Game.stage == Stage.END || Game.stage == Stage.WIN) {
       if (e.getKeyCode() == KeyEvent.VK_ENTER) {
         this.dispose();
+      }
+      if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+        Game.stage = Stage.GAME;
+        Reset();
+        Run();
       }
     }
   }
@@ -258,6 +304,7 @@ public class Game extends JFrame implements KeyListener, ActionListener {
       for (Entry<Integer, Invader> invader : this.invaders.entrySet()) {
         if (this.player.shot().collideWith(invader.getValue())) {
           this.remove = invader.getValue();
+          score += this.remove.getReward();
           this.remove.destroy();
           this.dt = this.time;
           this.di = invader.getKey();
@@ -306,7 +353,7 @@ public class Game extends JFrame implements KeyListener, ActionListener {
       shot.move();
 
       // Out of canvas
-      if (shot.getRect().getY() > this.canvas.getHeight() + 15) {
+      if (shot.getRect().getY() > this.canvas.getHeight() - 50) {
         this.invader_shots.remove(shot);
         this.canvas.remove(shot);
         break;
@@ -314,9 +361,24 @@ public class Game extends JFrame implements KeyListener, ActionListener {
 
       // Player hit
       if (shot.collideWith(this.player)) {
-        this.player.isHit();
-        this.invader_shots.remove(shot);
-        this.canvas.remove(shot);
+        // Player destroyed
+        if (this.lives.isEmpty()) {
+          this.player.destroy();
+          this.invader_shots.remove(shot);
+          this.canvas.remove(shot);
+          this.timer.stop();
+          stage = Stage.END;
+          Run();
+        }
+        else {
+          this.player.destroy();
+          this.pdt = this.time;
+          this.invader_shots.remove(shot);
+          this.canvas.remove(shot);
+
+          this.canvas.remove(this.lives.get(this.lives.size() - 1));
+          this.lives.remove(this.lives.size() - 1);
+        }
         break;
       }
 
@@ -334,6 +396,12 @@ public class Game extends JFrame implements KeyListener, ActionListener {
       }
     }
 
+    // Player respawn
+    if (this.pdt != 0 && this.time - this.pdt == 30) {
+      this.pdt = 0;
+      this.player.respawn();
+    }
+
     // Moving all invaders
     if (this.down) {
       for (Entry<Integer, Invader> invader : this.invaders.entrySet()) {
@@ -345,16 +413,8 @@ public class Game extends JFrame implements KeyListener, ActionListener {
       moveInvaders();
     }
 
-    // Player destroyed
-    if (this.player.isDestroyed()) {
-      this.player.destroy();
-      this.timer.stop();
-      stage = Stage.END;
-      Run();
-    }
-
-    // Player won
-    if (this.invaders.size() == 0) {
+    // Player win
+    if (this.invaders.isEmpty()) {
       this.timer.stop();
       stage = Stage.WIN;
       Run();

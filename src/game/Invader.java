@@ -7,6 +7,7 @@ import graphics.IPaintable;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -26,7 +27,7 @@ public class Invader implements IPaintable, ICollidable {
 
   public Invader(int type, int x, int y, int size) {
     this.stepX = 9;
-    this.stepY = 50;
+    this.stepY = 40;
     this.can_shoot = false;
     this.move_down = false;
 
@@ -62,9 +63,9 @@ public class Invader implements IPaintable, ICollidable {
     } catch (IOException e) {
     }
 
-    this.image = this.image.getScaledInstance(-1, 30, 0);
-    this.image2 = this.image2.getScaledInstance(-1, 30, 0);
-    this.image_d = this.image_d.getScaledInstance(-1, 25, 0);
+    this.image = this.image.getScaledInstance(-1, 25, 0);
+    this.image2 = this.image2.getScaledInstance(-1, 25, 0);
+    this.image_d = this.image_d.getScaledInstance(-1, 20, 0);
 
     this.posX = x + ( size - this.image.getWidth(null) ) / 2;
     this.posY = y + ( size - this.image.getHeight(null) ) / 2;
@@ -145,8 +146,9 @@ public class Invader implements IPaintable, ICollidable {
 
   @Override
   public boolean collideWith(ICollidable c) {
-    // TODO Auto-generated method stub
-    return false;
+    Rectangle2D s = this.getRect();
+    Rectangle2D n = c.getRect();
+    return s.intersects(n);
   }
 
 }

@@ -13,28 +13,30 @@ import javax.imageio.ImageIO;
 
 public class Player implements IPaintable, ICollidable {
   private Image image;
+  private Image image_s;
   private Image image_d;
   private int speed;
   private int posX;
   private int posY;
-  private int lives;
   private Shot shot;
   private boolean can_shoot;
+  private boolean can_move;
 
   public Player() {
     try {
-      this.image = ImageIO.read(ResourceLoader.load("player.png"));
+      this.image_s = ImageIO.read(ResourceLoader.load("player.png"));
       this.image_d = ImageIO.read(ResourceLoader.load("destroyed.png"));
     } catch (IOException e) {
     }
-    this.image = this.image.getScaledInstance(50, -1, 0);
-    this.image_d = this.image_d.getScaledInstance(50, -1, 0);
+    this.image_s = this.image_s.getScaledInstance(40, -1, 0);
+    this.image_d = this.image_d.getScaledInstance(40, -1, 0);
+    this.image = this.image_s;
     this.speed = 0;
     this.posX = Canvas.getCanvas().getWidth() / 2 - this.image.getWidth(null) / 2;
-    this.posY = Canvas.getCanvas().getHeight() - this.image.getHeight(null);
+    this.posY = Canvas.getCanvas().getHeight() - this.image.getHeight(null) - 40;
 
-    this.lives = 3;
     this.can_shoot = true;
+    this.can_move = true;
   }
 
   public boolean canShoot() {
@@ -57,6 +59,10 @@ public class Player implements IPaintable, ICollidable {
   }
 
   public void move() {
+    if (!this.can_move) {
+      return;
+    }
+
     this.posX += this.speed;
 
     if (this.posX < 0) {
@@ -68,23 +74,16 @@ public class Player implements IPaintable, ICollidable {
     }
   }
 
-  public void isHit() {
-    this.lives--;
-  }
-
   public void destroy() {
     this.image = this.image_d;
-    this.posY = Canvas.getCanvas().getHeight() - this.image.getHeight(null);
-    Canvas.getCanvas().repaint();
+    this.posY = Canvas.getCanvas().getHeight() - this.image.getHeight(null) - 40;
+    this.can_move = false;
   }
 
-  public boolean isDestroyed() {
-    if (this.lives == 0) {
-      return true;
-    }
-    else {
-      return false;
-    }
+  public void respawn() {
+    this.image = this.image_s;
+    this.posY = Canvas.getCanvas().getHeight() - this.image.getHeight(null) - 40;
+    this.can_move = true;
   }
 
   public void setSpeed(int s) {

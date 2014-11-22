@@ -24,25 +24,28 @@ public class Canvas extends JPanel {
 
   private static final Canvas canvas = new Canvas();
   private Font font;
-  private final String start;
-  private final String end;
-  private final String won;
-  private final String won2;
+  private Font font_small;
+  private final String STR_START = "PRESS ENTER TO START";
+  private final String STR_END = "GAME OVER";
+  private final String STR_WIN1 = "CONGRATULATIONS";
+  private final String STR_WIN2 = "YOU WON";
+  private final String STR_LIVES = "LIVES";
+  private final String STR_SCORE = "SCORE";
+  private final String STR_RETRY = "SPACE * RETRY";
+  private final String STR_EXIT = "ENTER * EXIT";
+  private String STR_POINTS = "0";
 
   private Canvas() {
 
     try {
       this.font = Font.createFont(Font.TRUETYPE_FONT, ResourceLoader.load("8-BIT WONDER.TTF"));
       this.font = this.font.deriveFont(24.0f);
+      this.font_small = this.font.deriveFont(20.0f);
     } catch (FontFormatException e) {
     } catch (IOException e) {
     }
-    this.start = "PRESS ENTER TO START";
-    this.end = "GAME OVER";
-    this.won = "CONGRATULATIONS";
-    this.won2 = "YOU WON";
 
-    setSize(800, 800);
+    setSize(700, 700);
     setVisible(true);
     setFocusable(true);
   }
@@ -54,6 +57,8 @@ public class Canvas extends JPanel {
     Rectangle bg = new Rectangle(0, 0, this.getWidth(), this.getHeight(), Color.BLACK);
     g.setFont(this.font);
     FontMetrics fm = g.getFontMetrics(this.font);
+    FontMetrics fm2 = g.getFontMetrics(this.font_small);
+    this.STR_POINTS = String.format("%04d", Game.getScore());
 
     switch (stage) {
       case START:
@@ -66,10 +71,15 @@ public class Canvas extends JPanel {
         g.drawImage(logo, (this.getWidth() - logo.getWidth(null)) / 2, 50, null);
 
         g.setColor(Color.WHITE);
-        g.drawString(this.start, (this.getWidth() - fm.stringWidth(this.start)) / 2, this.getHeight() / 2 + 100);
+        g.drawString(this.STR_START, (this.getWidth() - fm.stringWidth(this.STR_START)) / 2, this.getHeight() / 2 + 100);
         break;
       case GAME:
         bg.paint(g);
+        g.setColor(Color.WHITE);
+        g.setFont(this.font_small);
+        g.drawString(this.STR_LIVES, 10, this.getHeight() - 8);
+        g.drawString(this.STR_SCORE, 470, this.getHeight() - 8);
+        g.drawString(this.STR_POINTS, 600, this.getHeight() - 8);
         for (IPaintable obj : this.objects) {
           obj.paint(g);
         }
@@ -79,15 +89,21 @@ public class Canvas extends JPanel {
           obj.paint(g);
         }
         g.setColor(Color.BLACK);
-        g.fillRect(250, 325, 300, 100);
+        g.fillRect(200, 275, 300, 200);
         g.setColor(Color.WHITE);
-        g.drawString(this.end, (this.getWidth() - fm.stringWidth(this.end)) / 2, this.getHeight() / 2);
+        g.drawString(this.STR_END, (this.getWidth() - fm.stringWidth(this.STR_END)) / 2, this.getHeight() / 2);
+        g.setFont(this.font_small);
+        g.drawString(this.STR_RETRY, (this.getWidth() - fm2.stringWidth(this.STR_RETRY)) / 2, this.getHeight() /2  + 70);
+        g.drawString(this.STR_EXIT, (this.getWidth() - fm2.stringWidth(this.STR_EXIT)) / 2, this.getHeight() / 2 + 100);
         break;
       case WIN:
         bg.paint(g);
         g.setColor(Color.WHITE);
-        g.drawString(this.won, (this.getWidth() - fm.stringWidth(this.won)) / 2, this.getHeight() / 2 -20);
-        g.drawString(this.won2, (this.getWidth() - fm.stringWidth(this.won2)) / 2, this.getHeight() / 2 + 20);
+        g.drawString(this.STR_WIN1, (this.getWidth() - fm.stringWidth(this.STR_WIN1)) / 2, this.getHeight() / 2 -20);
+        g.drawString(this.STR_WIN2, (this.getWidth() - fm.stringWidth(this.STR_WIN2)) / 2, this.getHeight() / 2 + 20);
+        g.setFont(this.font_small);
+        g.drawString(this.STR_RETRY, 10, this.getHeight() - 8);
+        g.drawString(this.STR_EXIT, 470, this.getHeight() - 8);
         break;
     }
 
@@ -99,6 +115,10 @@ public class Canvas extends JPanel {
 
   public void remove(IPaintable obj) {
     this.objects.remove(obj);
+  }
+
+  public void clear() {
+    this.objects.clear();
   }
 
   public static Canvas getCanvas() {

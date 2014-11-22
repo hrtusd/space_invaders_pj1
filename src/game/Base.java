@@ -17,14 +17,30 @@ public class Base implements IPaintable, ICollidable {
   private final int posY;
   private int lives;
   private Image image;
+  private Image image1;
+  private Image image2;
+  private Image image3;
+  private Image image4;
+  private Image image5;
 
 
   public Base(int x, int y) {
     try {
-      this.image = ImageIO.read(ResourceLoader.load("base.png"));
+      this.image1 = ImageIO.read(ResourceLoader.load("base1.png"));
+      this.image2 = ImageIO.read(ResourceLoader.load("base2.png"));
+      this.image3 = ImageIO.read(ResourceLoader.load("base3.png"));
+      this.image4 = ImageIO.read(ResourceLoader.load("base4.png"));
+      this.image5 = ImageIO.read(ResourceLoader.load("base5.png"));
+
+      this.image1 = this.image1.getScaledInstance(80, -1, 0);
+      this.image2 = this.image2.getScaledInstance(80, -1, 0);
+      this.image3 = this.image3.getScaledInstance(80, -1, 0);
+      this.image4 = this.image4.getScaledInstance(80, -1, 0);
+      this.image5 = this.image5.getScaledInstance(80, -1, 0);
     } catch (IOException e) {
     }
-    this.image = this.image.getScaledInstance(100, -1, 0);
+
+    this.image = this.image1;
 
     this.posX = x;
     this.posY = y;
@@ -34,6 +50,28 @@ public class Base implements IPaintable, ICollidable {
 
   public void isHit() {
     this.lives--;
+    switch (this.lives) {
+      case 1:
+      case 2:
+        this.image = this.image5;
+        break;
+      case 3:
+      case 4:
+        this.image = this.image4;
+        break;
+      case 5:
+      case 6:
+        this.image = this.image3;
+        break;
+      case 7:
+      case 8:
+        this.image = this.image2;
+        break;
+      case 9:
+      case 10:
+        this.image = this.image1;
+        break;
+    }
   }
 
   public boolean isDestroyed() {
