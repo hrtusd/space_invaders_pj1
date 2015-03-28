@@ -16,7 +16,7 @@ public class Entity implements IPaintable {
 
   public Entity(String path, int scale_x, int scale_y, int x, int y) {
     try {
-      this.image = ImageIO.read(ResourceLoader.load(path));
+      this.image = ImageIO.read(new Resource(path).get());
       this.image = this.image.getScaledInstance(scale_x, scale_y, 0);
       this.x = x;
       this.y = y;

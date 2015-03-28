@@ -26,11 +26,11 @@ public class Base implements IPaintable, ICollidable {
 
   public Base(int x, int y) {
     try {
-      this.image1 = ImageIO.read(ResourceLoader.load("base1.png"));
-      this.image2 = ImageIO.read(ResourceLoader.load("base2.png"));
-      this.image3 = ImageIO.read(ResourceLoader.load("base3.png"));
-      this.image4 = ImageIO.read(ResourceLoader.load("base4.png"));
-      this.image5 = ImageIO.read(ResourceLoader.load("base5.png"));
+      this.image1 = ImageIO.read(new Resource("base1.png").get());
+      this.image2 = ImageIO.read(new Resource("base2.png").get());
+      this.image3 = ImageIO.read(new Resource("base3.png").get());
+      this.image4 = ImageIO.read(new Resource("base4.png").get());
+      this.image5 = ImageIO.read(new Resource("base5.png").get());
 
       this.image1 = this.image1.getScaledInstance(80, -1, 0);
       this.image2 = this.image2.getScaledInstance(80, -1, 0);
@@ -76,7 +76,7 @@ public class Base implements IPaintable, ICollidable {
 
   public boolean isDestroyed() {
     if (this.lives == 0) {
-      Canvas.getCanvas().remove(this);
+      Canvas.getInstance().remove(this);
       return true;
     }
     return false;

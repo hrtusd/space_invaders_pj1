@@ -34,24 +34,24 @@ public class Invader implements IPaintable, ICollidable {
     switch (type) {
       case 1:
         try {
-          this.image = ImageIO.read(ResourceLoader.load("inv1a.png"));
-          this.image2 = ImageIO.read(ResourceLoader.load("inv1b.png"));
+          this.image = ImageIO.read(new Resource("inv1a.png").get());
+          this.image2 = ImageIO.read(new Resource("inv1b.png").get());
         } catch (IOException e) {
         }
         this.reward = 10;
         break;
       case 2:
         try {
-          this.image = ImageIO.read(ResourceLoader.load("inv2a.png"));
-          this.image2 = ImageIO.read(ResourceLoader.load("inv2b.png"));
+          this.image = ImageIO.read(new Resource("inv2a.png").get());
+          this.image2 = ImageIO.read(new Resource("inv2b.png").get());
         } catch (IOException e) {
         }
         this.reward = 20;
         break;
       case 3:
         try {
-          this.image = ImageIO.read(ResourceLoader.load("inv3a.png"));
-          this.image2 = ImageIO.read(ResourceLoader.load("inv3b.png"));
+          this.image = ImageIO.read(new Resource("inv3a.png").get());
+          this.image2 = ImageIO.read(new Resource("inv3b.png").get());
         } catch (IOException e) {
         }
         this.reward = 30;
@@ -59,7 +59,7 @@ public class Invader implements IPaintable, ICollidable {
     }
 
     try {
-      this.image_d = ImageIO.read(ResourceLoader.load("explosion.png"));
+      this.image_d = ImageIO.read(new Resource("explosion.png").get());
     } catch (IOException e) {
     }
 
@@ -80,7 +80,7 @@ public class Invader implements IPaintable, ICollidable {
   }
 
   public void destroyed() {
-    Canvas.getCanvas().remove(this);
+    Canvas.getInstance().remove(this);
   }
 
   public void swap() {
@@ -90,7 +90,7 @@ public class Invader implements IPaintable, ICollidable {
   }
 
   public boolean canMove() {
-    if (this.posX + this.stepX > Canvas.getCanvas().getWidth() - this.image.getWidth(null) || this.posX + this.stepX < 0) {
+    if (this.posX + this.stepX > Canvas.getInstance().getWidth() - this.image.getWidth(null) || this.posX + this.stepX < 0) {
       this.move_down = true;
       return false;
     }
@@ -123,7 +123,7 @@ public class Invader implements IPaintable, ICollidable {
 
   public void shoot() {
     this.shot = new Shot(1, this.posX + this.image.getWidth(null) / 2 - 5 / 2, this.posY + this.image.getHeight(null));
-    Canvas.getCanvas().add(this.shot);
+    Canvas.getInstance().add(this.shot);
   }
 
   public Shot shot() {

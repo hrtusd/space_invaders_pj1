@@ -1,7 +1,7 @@
 package graphics;
 
 import game.Game;
-import game.ResourceLoader;
+import game.Resource;
 import game.Stage;
 
 import java.awt.Color;
@@ -32,13 +32,14 @@ public class Canvas extends JPanel {
   private final String STR_LIVES = "LIVES";
   private final String STR_SCORE = "SCORE";
   private final String STR_RETRY = "SPACE * RETRY";
+  private final String STR_AGAIN = "SPACE * PLAY AGAIN";
   private final String STR_EXIT = "ENTER * EXIT";
   private String STR_POINTS = "0";
 
   private Canvas() {
 
     try {
-      this.font = Font.createFont(Font.TRUETYPE_FONT, ResourceLoader.load("8-BIT WONDER.TTF"));
+      this.font = Font.createFont(Font.TRUETYPE_FONT, new Resource("8-BIT WONDER.TTF").get());
       this.font = this.font.deriveFont(24.0f);
       this.font_small = this.font.deriveFont(20.0f);
     } catch (FontFormatException e) {
@@ -52,20 +53,20 @@ public class Canvas extends JPanel {
 
   @Override
   public void paintComponent(Graphics g) {
-    Stage stage = Game.getStage();
+    Stage stage = Game.getInstance().getStage();
 
     Rectangle bg = new Rectangle(0, 0, this.getWidth(), this.getHeight(), Color.BLACK);
     g.setFont(this.font);
     FontMetrics fm = g.getFontMetrics(this.font);
     FontMetrics fm2 = g.getFontMetrics(this.font_small);
-    this.STR_POINTS = String.format("%04d", Game.getScore());
+    this.STR_POINTS = String.format("%04d", Game.getInstance().getScore());
 
     switch (stage) {
       case START:
         bg.paint(g);
         Image logo = null;
         try {
-          logo = ImageIO.read(ResourceLoader.load("logo.png"));
+          logo = ImageIO.read(new Resource("logo.png").get());
         } catch (IOException e1) {
         }
         g.drawImage(logo, (this.getWidth() - logo.getWidth(null)) / 2, 50, null);
@@ -85,6 +86,7 @@ public class Canvas extends JPanel {
         }
         break;
       case END:
+        bg.paint(g);
         for (IPaintable obj : this.objects) {
           obj.paint(g);
         }
@@ -93,6 +95,9 @@ public class Canvas extends JPanel {
         g.setColor(Color.WHITE);
         g.drawString(this.STR_END, (this.getWidth() - fm.stringWidth(this.STR_END)) / 2, this.getHeight() / 2);
         g.setFont(this.font_small);
+        g.drawString(this.STR_LIVES, 10, this.getHeight() - 8);
+        g.drawString(this.STR_SCORE, 470, this.getHeight() - 8);
+        g.drawString(this.STR_POINTS, 600, this.getHeight() - 8);
         g.drawString(this.STR_RETRY, (this.getWidth() - fm2.stringWidth(this.STR_RETRY)) / 2, this.getHeight() /2  + 70);
         g.drawString(this.STR_EXIT, (this.getWidth() - fm2.stringWidth(this.STR_EXIT)) / 2, this.getHeight() / 2 + 100);
         break;
@@ -102,7 +107,7 @@ public class Canvas extends JPanel {
         g.drawString(this.STR_WIN1, (this.getWidth() - fm.stringWidth(this.STR_WIN1)) / 2, this.getHeight() / 2 -20);
         g.drawString(this.STR_WIN2, (this.getWidth() - fm.stringWidth(this.STR_WIN2)) / 2, this.getHeight() / 2 + 20);
         g.setFont(this.font_small);
-        g.drawString(this.STR_RETRY, 10, this.getHeight() - 8);
+        g.drawString(this.STR_AGAIN, 10, this.getHeight() - 8);
         g.drawString(this.STR_EXIT, 470, this.getHeight() - 8);
         break;
     }
@@ -121,7 +126,7 @@ public class Canvas extends JPanel {
     this.objects.clear();
   }
 
-  public static Canvas getCanvas() {
+  public static Canvas getInstance() {
     return canvas;
   }
 }

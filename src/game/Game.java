@@ -19,15 +19,17 @@ import javax.swing.Timer;
 
 @SuppressWarnings("serial")
 public class Game extends JFrame implements KeyListener, ActionListener {
-  private final Canvas canvas = Canvas.getCanvas();
+
+  private static final Game game = new Game();
+  private final Canvas canvas = Canvas.getInstance();
   private Player player;
   private final Map<Integer, Invader> invaders = new HashMap<>();
   private final List<Shot> invader_shots = new LinkedList<>();
   private final List<Base> bases = new LinkedList<>();
   private final List<Entity> lives = new LinkedList<>();
   private Timer timer;
-  private static Stage stage = Stage.START;
-  private static int score = 0;
+  private Stage stage = Stage.START;
+  private int score = 0;
   private int time;
   private int movetime;
   private Invader remove = null;
@@ -50,7 +52,11 @@ public class Game extends JFrame implements KeyListener, ActionListener {
     this.canvas.addKeyListener(this);
   }
 
-  public void Init() {
+  public static Game getInstance() {
+    return game;
+  }
+
+  public void start() {
 
     this.player = new Player();
     this.canvas.add(this.player);
@@ -117,37 +123,23 @@ public class Game extends JFrame implements KeyListener, ActionListener {
     this.timer.start();
   }
 
-  public void Reset() {
+  public void reset() {
     this.lives.clear();
     this.bases.clear();
     this.invaders.clear();
     this.invader_shots.clear();
     this.player = null;
     this.time = 0;
-    score = 0;
+    this.score = 0;
     this.canvas.clear();
   }
 
-  public void Run() {
-    switch (Game.stage) {
-      case START:
-        break;
-      case GAME:
-        Init();
-        break;
-      case END:
-        break;
-      case WIN:
-        break;
-    }
+  public Stage getStage() {
+    return this.stage;
   }
 
-  public static Stage getStage() {
-    return stage;
-  }
-
-  public static int getScore() {
-    return score;
+  public int getScore() {
+    return this.score;
   }
 
   public void moveInvaders() {
@@ -166,14 +158,12 @@ public class Game extends JFrame implements KeyListener, ActionListener {
         for (Base base : this.bases) {
           if (invader.getValue().collideWith(base)) {
             this.timer.stop();
-            stage = Stage.END;
-            Run();
+            this.stage = Stage.END;
           }
         }
         if (invader.getValue().collideWith(this.player)) {
           this.timer.stop();
-          stage = Stage.END;
-          Run();
+          this.stage = Stage.END;
         }
       }
     }
@@ -230,7 +220,7 @@ public class Game extends JFrame implements KeyListener, ActionListener {
 
   @Override
   public void keyPressed(KeyEvent e) {
-    if (Game.stage == Stage.GAME) {
+    if (this.stage == Stage.GAME) {
       if (e.getKeyCode() == KeyEvent.VK_LEFT) {
         Game.this.player.setSpeed(-4);
       }
@@ -242,28 +232,38 @@ public class Game extends JFrame implements KeyListener, ActionListener {
           this.player.shoot();
         }
       }
-    }
-    if (Game.stage == Stage.START) {
-      if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-        Game.stage = Stage.GAME;
-        Run();
+      if (e.getKeyCode() == KeyEvent.VK_W) {
+        this.timer.stop();
+        this.stage = Stage.WIN;
+        this.canvas.repaint();
+      }
+      if (e.getKeyCode() == KeyEvent.VK_E) {
+        this.timer.stop();
+        this.stage = Stage.END;
+        this.canvas.repaint();
       }
     }
-    if (Game.stage == Stage.END || Game.stage == Stage.WIN) {
+    if (this.stage == Stage.START) {
+      if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+        start();
+        this.stage = Stage.GAME;
+      }
+    }
+    if (this.stage == Stage.END || this.stage == Stage.WIN) {
       if (e.getKeyCode() == KeyEvent.VK_ENTER) {
         this.dispose();
       }
       if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-        Game.stage = Stage.GAME;
-        Reset();
-        Run();
+        this.stage = Stage.GAME;
+        reset();
+        start();
       }
     }
   }
 
   @Override
   public void keyReleased(KeyEvent e) {
-    if (Game.stage == Stage.GAME) {
+    if (this.stage == Stage.GAME) {
       if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT) {
         Game.this.player.setSpeed(0);
       }
@@ -304,7 +304,7 @@ public class Game extends JFrame implements KeyListener, ActionListener {
       for (Entry<Integer, Invader> invader : this.invaders.entrySet()) {
         if (this.player.shot().collideWith(invader.getValue())) {
           this.remove = invader.getValue();
-          score += this.remove.getReward();
+          this.score += this.remove.getReward();
           this.remove.destroy();
           this.dt = this.time;
           this.di = invader.getKey();
@@ -361,21 +361,19 @@ public class Game extends JFrame implements KeyListener, ActionListener {
 
       // Player hit
       if (shot.collideWith(this.player)) {
+        this.player.destroy();
+        this.pdt = this.time;
+        this.invader_shots.remove(shot);
+        this.canvas.remove(shot);
+
         // Player destroyed
         if (this.lives.isEmpty()) {
-          this.player.destroy();
-          this.invader_shots.remove(shot);
-          this.canvas.remove(shot);
           this.timer.stop();
-          stage = Stage.END;
-          Run();
+          this.stage = Stage.END;
+          this.canvas.repaint();
+          return;
         }
         else {
-          this.player.destroy();
-          this.pdt = this.time;
-          this.invader_shots.remove(shot);
-          this.canvas.remove(shot);
-
           this.canvas.remove(this.lives.get(this.lives.size() - 1));
           this.lives.remove(this.lives.size() - 1);
         }
@@ -416,11 +414,12 @@ public class Game extends JFrame implements KeyListener, ActionListener {
     // Player win
     if (this.invaders.isEmpty()) {
       this.timer.stop();
-      stage = Stage.WIN;
-      Run();
+      this.stage = Stage.WIN;
+      this.canvas.repaint();
+      return;
     }
 
     // Canvas repaint
-    Canvas.getCanvas().repaint();
+    this.canvas.repaint();
   }
 }
